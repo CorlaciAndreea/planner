@@ -1,8 +1,11 @@
 package com.github.corlaciandreea.planner.service;
 
+import com.github.corlaciandreea.planner.error.ValidationException;
 import com.github.corlaciandreea.planner.model.WishBookEntry;
 import com.github.corlaciandreea.planner.repository.WishBookRepository;
+import com.github.corlaciandreea.planner.validator.ShiftValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service // Marks this class as a Spring service component.
@@ -10,9 +13,14 @@ public class WishBookServiceImpl implements WishBookService {
 
     @Autowired
     private WishBookRepository wishBookRepository;
+    @Autowired
+    private ShiftValidator shiftValidator;
 
     @Override
-    public WishBookEntry saveWishBookEntry(WishBookEntry entry){
+    public WishBookEntry saveWishBookEntry(WishBookEntry entry) throws ValidationException{
+        if(!shiftValidator.isShiftValid(entry.getShift())){
+            throw new ValidationException("The shift is not valid.");
+        }
         WishBookEntry entryToBeSaved = entry;
 
         // If the employee and the date are the same -> update an existing wish entry
