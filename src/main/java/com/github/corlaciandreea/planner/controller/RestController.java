@@ -27,7 +27,7 @@ public class RestController {
     @PutMapping("/wish/{employeeId}/{date}")
     public WishBookEntry saveWishBookEntry(@PathVariable("employeeId") String employeeId,
                                            @PathVariable("date") LocalDate date,
-                                           @RequestBody String shift) throws ValidationException {
+                                           @RequestBody String shift) {
         try {
             WishBookEntry newEntry = new WishBookEntry(employeeId, date, shift);
             return this.wishBookService.saveWishBookEntry(newEntry);
