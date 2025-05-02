@@ -24,7 +24,7 @@ public class WishBookServiceImpl implements WishBookService {
 
         // If the employee and the date are the same -> update an existing wish entry
         WishBookEntry existingEntry = this.wishBookRepository.findEntryByEmployeeIdAndDate(entry.getEmployeeId(), entry.getDate());
-        if (existingEntry.getEntryId() != null) {
+        if (existingEntry != null) {
             entry.setEntryId(existingEntry.getEntryId());
         }
         return wishBookRepository.save(entry);
