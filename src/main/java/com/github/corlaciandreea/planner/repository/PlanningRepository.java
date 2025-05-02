@@ -7,10 +7,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface PlanningRepository extends JpaRepository<Plan, Long> {
 
     @Query("select p from Plan p where p.date = :date and p.shift = :shift")
     Plan findPlanByDateAndShift(@Param("date") LocalDate date, @Param("shift") String shift);
+
+    @Query("select p from Plan p where p.date = :date")
+    List<Plan> findByDate(@Param("date") LocalDate date);
+
 }

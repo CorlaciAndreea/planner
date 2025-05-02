@@ -35,7 +35,7 @@ public class PlanningServiceImpl implements PlanningService {
         // Validate the introduced plan
         validatePlan(plan);
 
-        //If the plan already exists allow the admin to update the entry
+        // If the plan already exists allow the admin to update the entry
         Plan existingPlan = this.planningRepository.findPlanByDateAndShift(plan.getDate(), plan.getShift());
         if (existingPlan.getPlanId() != null) {
             plan.setPlanId(existingPlan.getPlanId());
@@ -45,7 +45,38 @@ public class PlanningServiceImpl implements PlanningService {
             plan.setEmployees(emplSet.stream().toList());
         }
 
+        // Check the employees have one shift per day
+        checkOnlyOneEmployeePerShift(plan);
+
+        // Save or update the plan
         return planningRepository.save(plan);
+    }
+
+    private void checkOnlyOneEmployeePerShift(Plan plan) {
+        // Get all the shifts for the current day
+        List<Plan> shiftsPerDay = this.planningRepository.findByDate(plan.getDate());
+
+        // Add all employees to a set
+        Set<String> allEmployees = new HashSet<>();
+        int counter = 0;
+        for (Plan p : shiftsPerDay) {
+            Plan existingPlan = this.planningRepository.findPlanByDateAndShift(plan.getDate(), plan.getShift());
+            if (existingPlan.getPlanId().equals(p.getPlanId())) {
+                //If the plan is only updated use the new employees values
+                p.setEmployees(plan.getEmployees());
+            } else {
+                //Otherwise take into consideration the current plan
+                allEmployees.addAll(plan.getEmployees());
+                counter += plan.getEmployees().size();
+            }
+
+            allEmployees.addAll(p.getEmployees());
+            counter += p.getEmployees().size();
+        }
+
+        if (allEmployees.size() != counter) {
+            throw new ValidationException("There can only be one employee per shift per day.");
+        }
     }
 
     private void validatePlan(Plan plan) throws ValidationException {
