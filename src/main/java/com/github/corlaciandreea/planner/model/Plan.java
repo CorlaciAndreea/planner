@@ -26,4 +26,17 @@ public class Plan {
     @ElementCollection
     @Column(name = "employees")
     private List<String> employees;
+
+    /**
+     * Constructor.
+     *
+     * @param date          the date of the plan.
+     * @param shift         the shift.
+     * @param employeesList the list of employees per shift.
+     */
+    public Plan(LocalDate date, String shift, List<String> employeesList) {
+        this.date = date;
+        this.shift = shift;
+        this.employees = employeesList;
+    }
 }
