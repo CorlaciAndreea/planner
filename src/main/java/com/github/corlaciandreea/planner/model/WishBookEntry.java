@@ -1,20 +1,13 @@
 package com.github.corlaciandreea.planner.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
+
 
 @Entity
-@Data // Generates getters, setters, toString, equals and hshCode methods.
+@Data // Generates getters, setters, toString, equals and hashCode methods.
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -28,9 +21,16 @@ public class WishBookEntry {
     private LocalDate date;
     private String shift;
 
+    /**
+     * Constructor.
+     * @param employeeId the id of the employee.
+     * @param date the date.
+     * @param shift the shift.
+     */
     public WishBookEntry(String employeeId, LocalDate date, String shift) {
         this.employeeId = employeeId;
         this.date = date;
         this.shift = shift;
     }
+
 }
