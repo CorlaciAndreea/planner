@@ -1,17 +1,19 @@
 package com.github.corlaciandreea.planner.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-
 
 @Entity
 @Data // Generates getters, setters, toString, equals and hashCode methods.
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name="wishbook")
+@Table(name = "wishbook")
 public class WishBookEntry {
     @Id //Primary key of the entity.
     @GeneratedValue(strategy = GenerationType.AUTO) // Auto-generates the primary key.
@@ -23,9 +25,10 @@ public class WishBookEntry {
 
     /**
      * Constructor.
+     *
      * @param employeeId the id of the employee.
-     * @param date the date.
-     * @param shift the shift.
+     * @param date       the date.
+     * @param shift      the shift.
      */
     public WishBookEntry(String employeeId, LocalDate date, String shift) {
         this.employeeId = employeeId;

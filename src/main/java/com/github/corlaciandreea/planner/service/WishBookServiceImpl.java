@@ -17,7 +17,7 @@ public class WishBookServiceImpl implements WishBookService {
 
     @Override
     public WishBookEntry saveWishBookEntry(WishBookEntry entry) throws ValidationException {
-        //Do not save the entry if the shift is not valid
+        // Do not save the entry if the shift is not valid
         if (!shiftValidator.isShiftValid(entry.getShift())) {
             throw new ValidationException("The shift is not valid.");
         }

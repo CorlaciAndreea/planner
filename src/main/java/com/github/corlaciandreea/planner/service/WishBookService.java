@@ -6,6 +6,7 @@ public interface WishBookService {
 
     /**
      * Saves a wishbook entry.
+     *
      * @param entry the entry to be saved
      * @return the saved entry.
      */
