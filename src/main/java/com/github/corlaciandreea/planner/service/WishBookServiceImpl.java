@@ -12,7 +12,14 @@ public class WishBookServiceImpl implements WishBookService {
     private WishBookRepository wishBookRepository;
 
     @Override
-    public WishBookEntry saveWishBookEntry(WishBookEntry entry) {
-        return wishBookRepository.save(entry);
+    public WishBookEntry saveWishBookEntry(WishBookEntry entry){
+        WishBookEntry entryToBeSaved = entry;
+
+        // If the employee and the date are the same -> update an existing wish entry
+        WishBookEntry existingEntry = this.wishBookRepository.findEntryByEmployeeIdAndDate(entry.getEmployeeId(), entry.getDate());
+        if(existingEntry.getEntryId() != null) {
+            entryToBeSaved.setEntryId(existingEntry.getEntryId());
+        }
+        return wishBookRepository.save(entryToBeSaved);
     }
 }
