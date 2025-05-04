@@ -51,7 +51,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.38</version>
-            <scope>annotationProcessor</scope>
+            <scope>provided</scope>
         </dependency>
 
         <!-- SQLite JDBC Driver -->
@@ -70,8 +70,30 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.38</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.38</version>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -87,6 +109,25 @@
                 </configuration>
             </plugin>
         </plugins>
+        <!--        <plugins>-->
+        <!--            <plugin>-->
+        <!--                <groupId>org.springframework.boot</groupId>-->
+        <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+        <!--            </plugin>-->
+        <!--            &lt;!&ndash;            <plugin>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                <artifactId>maven-compiler-plugin</artifactId>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                <version>3.14.0</version>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                <configuration>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                    <annotationProcessorPaths>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                        <path>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                            <groupId>org.projectlombok</groupId>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                            <artifactId>lombok</artifactId>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                            <version>1.18.32</version>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                        </path>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                    </annotationProcessorPaths>&ndash;&gt;-->
+        <!--            &lt;!&ndash;                </configuration>&ndash;&gt;-->
+        <!--            &lt;!&ndash;            </plugin>&ndash;&gt;-->
+        <!--        </plugins>-->
     </build>
 
 </project>
