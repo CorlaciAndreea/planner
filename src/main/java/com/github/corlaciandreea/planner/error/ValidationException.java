@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpServerErrorException;
 
 /**
- * Class that handles the errors that might appear in the application.
+ * Class that handles the exceptions that might appear in the application.
  */
 public class ValidationException extends HttpServerErrorException {
     /**
