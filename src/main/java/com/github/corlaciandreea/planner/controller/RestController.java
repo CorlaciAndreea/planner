@@ -1,6 +1,7 @@
 package com.github.corlaciandreea.planner.controller;
 
 import com.github.corlaciandreea.planner.error.ValidationException;
+import com.github.corlaciandreea.planner.model.DaySchedule;
 import com.github.corlaciandreea.planner.model.Plan;
 import com.github.corlaciandreea.planner.model.WishBookEntry;
 import com.github.corlaciandreea.planner.service.PlanningService;
@@ -52,5 +53,10 @@ public class RestController {
         } catch (ValidationException e) {
             throw new ResponseStatusException(e.getStatusCode(), e.getMessage(), e);
         }
+    }
+
+    @GetMapping("/schedule/{date}")
+    public DaySchedule getScheduleForDay(@PathVariable("date") LocalDate date) {
+        return this.planningService.getSchedulePerDay(date);
     }
 }

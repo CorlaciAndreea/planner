@@ -1,17 +1,19 @@
 package com.github.corlaciandreea.planner.service;
 
 import com.github.corlaciandreea.planner.error.ValidationException;
+import com.github.corlaciandreea.planner.model.DaySchedule;
 import com.github.corlaciandreea.planner.model.Plan;
 import com.github.corlaciandreea.planner.model.WishBookEntry;
 import com.github.corlaciandreea.planner.repository.PlanningRepository;
 import com.github.corlaciandreea.planner.repository.WishBookRepository;
 import com.github.corlaciandreea.planner.validator.ShiftValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 public class PlanningServiceImpl implements PlanningService {
@@ -37,12 +39,8 @@ public class PlanningServiceImpl implements PlanningService {
 
         // If the plan already exists allow the admin to update the entry
         Plan existingPlan = this.planningRepository.findPlanByDateAndShift(plan.getDate(), plan.getShift());
-        if (existingPlan.getPlanId() != null) {
+        if (existingPlan != null) {
             plan.setPlanId(existingPlan.getPlanId());
-            // Update the employee list
-            Set<String> emplSet = new HashSet<>(existingPlan.getEmployees());
-            emplSet.addAll(plan.getEmployees());
-            plan.setEmployees(emplSet.stream().toList());
         }
 
         // Check the employees have one shift per day
@@ -52,38 +50,78 @@ public class PlanningServiceImpl implements PlanningService {
         return planningRepository.save(plan);
     }
 
-    private void checkOnlyOneEmployeePerShift(Plan plan) {
-        // Get all the shifts for the current day
-        List<Plan> shiftsPerDay = this.planningRepository.findByDate(plan.getDate());
+    @Override
+    public DaySchedule getSchedulePerDay(LocalDate date) {
+        // Get all the planning for the current day
+        List<Plan> shiftsForDay = this.planningRepository.findByDate(date);
 
-        // Add all employees to a set
-        Set<String> allEmployees = new HashSet<>();
-        int counter = 0;
-        for (Plan p : shiftsPerDay) {
-            Plan existingPlan = this.planningRepository.findPlanByDateAndShift(plan.getDate(), plan.getShift());
-            if (existingPlan.getPlanId().equals(p.getPlanId())) {
-                //If the plan is only updated use the new employees values
-                p.setEmployees(plan.getEmployees());
-            } else {
-                //Otherwise take into consideration the current plan
-                allEmployees.addAll(plan.getEmployees());
-                counter += plan.getEmployees().size();
-            }
-
-            allEmployees.addAll(p.getEmployees());
-            counter += p.getEmployees().size();
+        if (shiftsForDay == null) {
+            throw new HttpServerErrorException(HttpStatus.NO_CONTENT, "There is no schedule for that specific date.");
         }
 
-        if (allEmployees.size() != counter) {
-            throw new ValidationException("There can only be one employee per shift per day.");
+        // Sort the list so the shifts are early then late
+        Collections.sort(shiftsForDay, new Comparator<Plan>() {
+            @Override
+            public int compare(Plan p1, Plan p2) {
+                return p1.getShift().compareToIgnoreCase(p2.getShift());
+            }
+        });
+
+        //Create the schedule
+        DaySchedule daySchedule = new DaySchedule();
+        daySchedule.setDate(date);
+        Map<String, List<String>> shifts = new HashMap<>();
+        // Add the existing shifts
+        for (Plan p : shiftsForDay) {
+            shifts.put(p.getShift(), p.getEmployees());
+        }
+        daySchedule.setShifts(shifts);
+
+        return daySchedule;
+    }
+
+    /**
+     * Method that checks if one employee has only one shift per day in the new planning.
+     *
+     * @param newPlan the plan to be validated.
+     * @throws ValidationException if one employee.
+     */
+    private void checkOnlyOneEmployeePerShift(Plan newPlan) {
+        // Get all the planning for the current day
+        List<Plan> shiftsPerDay = this.planningRepository.findByDate(newPlan.getDate());
+
+        for (String employee : newPlan.getEmployees()) {
+            for (Plan p : shiftsPerDay) {
+                // Do not take into consideration the updated plan
+                if (newPlan.getPlanId().equals(p.getPlanId())) {
+                    continue;
+                } else {
+                    for (String allocatedEmployee : p.getEmployees()) {
+                        if (employee.equals(allocatedEmployee)) {
+                            throw new ValidationException("The employee " + employee + "cannot allocated for the "
+                                    + newPlan.getShift() + " shift, because he is already allocated for the " + p.getShift() + " shift on"
+                                    + p.getDate().toString());
+                        }
+                    }
+                }
+            }
         }
     }
 
+    /**
+     * Checks of the new plan takes into consideration the wish book entries added by the user and if there are only two
+     * employees assigned per shift.
+     *
+     * @param plan the plan to be validated.
+     * @throws ValidationException if the plan is not valid.
+     */
     private void validatePlan(Plan plan) throws ValidationException {
         // Ensure that only 2 employees are included per shift
         List<String> employeesList = plan.getEmployees();
-        if (employeesList.size() > 2) {
-            throw new ValidationException("Only two employees per shift are allowed");
+        if (employeesList.size() == 1) {
+            throw new ValidationException("There must be two employees per shift.");
+        } else if (employeesList.size() > 2) {
+            throw new ValidationException("Only two employees per shift are allowed.");
         }
         Set<String> emplSet = new HashSet<>(employeesList);
         // Check that the employees have corresponding wishbook entries
@@ -92,7 +130,7 @@ public class PlanningServiceImpl implements PlanningService {
 
         for (String empl : emplSet) {
             WishBookEntry wishbookEntry = this.wishBookRepository.findEntryByEmployeeIdAndDate(empl, plan.getDate());
-            if (wishbookEntry == null) {
+            if (wishbookEntry == null || !wishbookEntry.getShift().equalsIgnoreCase(plan.getShift())) {
                 errorMessage.append(empl).append(" ");
                 isWishBookEntryMissing = true;
             }
