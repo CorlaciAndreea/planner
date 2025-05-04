@@ -55,22 +55,14 @@ public class PlanningServiceImpl implements PlanningService {
         // Get all the planning for the current day
         List<Plan> shiftsForDay = this.planningRepository.findByDate(date);
 
-        if (shiftsForDay == null) {
+        if (shiftsForDay.isEmpty()) {
             throw new HttpServerErrorException(HttpStatus.NO_CONTENT, "There is no schedule for that specific date.");
         }
 
-        // Sort the list so the shifts are early then late
-        Collections.sort(shiftsForDay, new Comparator<Plan>() {
-            @Override
-            public int compare(Plan p1, Plan p2) {
-                return p1.getShift().compareToIgnoreCase(p2.getShift());
-            }
-        });
-
-        //Create the schedule
+        // Create the schedule
         DaySchedule daySchedule = new DaySchedule();
         daySchedule.setDate(date);
-        Map<String, List<String>> shifts = new HashMap<>();
+        Map<String, List<String>> shifts = new TreeMap<>();
         // Add the existing shifts
         for (Plan p : shiftsForDay) {
             shifts.put(p.getShift(), p.getEmployees());
@@ -93,13 +85,13 @@ public class PlanningServiceImpl implements PlanningService {
         for (String employee : newPlan.getEmployees()) {
             for (Plan p : shiftsPerDay) {
                 // Do not take into consideration the updated plan
-                if (newPlan.getPlanId().equals(p.getPlanId())) {
+                if (newPlan.getPlanId() != null && newPlan.getPlanId().equals(p.getPlanId())) {
                     continue;
                 } else {
                     for (String allocatedEmployee : p.getEmployees()) {
                         if (employee.equals(allocatedEmployee)) {
-                            throw new ValidationException("The employee " + employee + "cannot allocated for the "
-                                    + newPlan.getShift() + " shift, because he is already allocated for the " + p.getShift() + " shift on"
+                            throw new ValidationException("The employee " + employee + " cannot allocated for the "
+                                    + newPlan.getShift() + " shift, because he is already allocated for the " + p.getShift() + " shift on "
                                     + p.getDate().toString());
                         }
                     }

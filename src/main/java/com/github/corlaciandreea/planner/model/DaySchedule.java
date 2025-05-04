@@ -1,6 +1,5 @@
 package com.github.corlaciandreea.planner.model;
 
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-@Entity
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
