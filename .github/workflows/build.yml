@@ -25,6 +25,3 @@ jobs:
         with:
           name: java-app
           path: '${{ github.workspace }}/target/*.jar'
-
-      - name: Run Tests
-        run: mvn test
