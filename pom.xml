@@ -45,7 +45,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
+            <version>2.3.232</version>
         </dependency>
 
         <dependency>
@@ -115,25 +115,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <!--        <plugins>-->
-        <!--            <plugin>-->
-        <!--                <groupId>org.springframework.boot</groupId>-->
-        <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-        <!--            </plugin>-->
-        <!--            &lt;!&ndash;            <plugin>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                <artifactId>maven-compiler-plugin</artifactId>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                <version>3.14.0</version>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                <configuration>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                    <annotationProcessorPaths>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                        <path>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                            <groupId>org.projectlombok</groupId>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                            <artifactId>lombok</artifactId>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                            <version>1.18.32</version>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                        </path>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                    </annotationProcessorPaths>&ndash;&gt;-->
-        <!--            &lt;!&ndash;                </configuration>&ndash;&gt;-->
-        <!--            &lt;!&ndash;            </plugin>&ndash;&gt;-->
-        <!--        </plugins>-->
     </build>
 
 </project>
