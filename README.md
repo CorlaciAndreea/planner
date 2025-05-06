@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Checkout Staffing Planner is a RESTful API-based application designed to automate shift scheduling for supermarket checkout staff. It replaces a manual Excel-driven process with a structured, programmatic solution that enables efficient shift planning, employee preference management, and schedule retrieval.
+The Checkout Staffing Planner is a REST server application designed to automate shift scheduling for supermarket checkout staff. It replaces a manual Excel-driven process with a structured, programmatic solution that enables efficient shift planning, employee preference management, and schedule retrieval.
 
 ## Features
 
